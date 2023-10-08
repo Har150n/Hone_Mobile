@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'start_menu.dart';
-import 'story_selection.dart';
+import 'pages/start_menu.dart';
+import 'pages/story_selection.dart';
 
 List<CameraDescription>? cameras = [];
 

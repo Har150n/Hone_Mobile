@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'custom_app_bar.dart';
-import 'text.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/text.dart';
 import 'game_page.dart';
-import 'story.dart';
-import 'story_controller.dart';
+import '../model/story.dart';
+import '../story_data/story_1_data.dart';
 
 class StoryBox extends StatelessWidget {
   Story story;

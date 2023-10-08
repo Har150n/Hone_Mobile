@@ -5,7 +5,7 @@ class TextStyles {
       fontSize: 80,
       color: Colors.black,
       fontWeight: FontWeight.normal,
-      fontFamily: 'PressStart2P',
+      fontFamily: 'Overpass_Mono',
       );
 
   static const TextStyle headingText = TextStyle(

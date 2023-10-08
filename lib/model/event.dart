@@ -10,12 +10,14 @@ class Event {
     required this.isQuestionEvent,
     required this.animationInstruction,
     required this.emotionInstruction,
+    required this.enlargeInstruction,
 });
   Duration duration;
   String audioPath;
-  bool isQuestionEvent;
-  String animationInstruction;
-  String emotionInstruction;
+  bool isQuestionEvent;         //
+  String animationInstruction;  // Ex: "A0B1C5"     -> moves character A to position 0, B to position, ...
+  String emotionInstruction;    // Ex: "Anervous"   -> makes character A's image nervous
+  String enlargeInstruction;    // Ex: "A"          -> indicate character(s) is speaking
 
 
 }

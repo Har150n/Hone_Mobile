@@ -64,6 +64,8 @@ flutter:
     - assets/images/characters/
     - assets/images/stories/
     - assets/audio/
+    - assets/audio/narration/
+    - assets/audio/narration/1/
 
   fonts:
     - family: Overpass_Mono
