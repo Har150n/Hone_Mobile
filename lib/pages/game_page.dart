@@ -4,9 +4,10 @@ import '../model/story.dart';
 import '../model/character.dart';
 import '../model/event.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:camera/camera.dart';
-import '../main.dart';
 import '../helper_functions/background_audio.dart';
+// import 'package:camera/camera.dart';
+
+// TODO: Create character_controller.dart
 
 class Game extends StatefulWidget {
   final Story story;
@@ -19,8 +20,6 @@ class Game extends StatefulWidget {
   }
 }
 
-// TODO: Add a prop widget and edit the Event object
-
 class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   Story story;
   late List<Event> events;
@@ -29,9 +28,12 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   var player = AudioPlayer();
   bool isAudioPlaying = false;
 
-  // list of cameras
-  CameraImage? cameraImage;
-  CameraController? cameraController;
+  // background audio controller
+  var backgroundPlayer = AudioPlayer();
+
+  //// list of cameras
+  // CameraImage? cameraImage;
+  // CameraController? cameraController;
 
   int eventIndex = 0;
   List<int> initialPositions = [];
@@ -81,12 +83,12 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
     // resets events
     eventIndex = 0;
 
-    // initialize camera
-    if(cameras!.length != 0 ) {
-      loadCamera();
-    } else {
-      cameraController = null;
-    }
+    //// initialize camera
+    // if(cameras!.length != 0 ) {
+    //   loadCamera();
+    // } else {
+    //   cameraController = null;
+    // }
 
     // play background music
     backgroundPlayer.setVolume(0.3);
@@ -97,34 +99,32 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   @override
   Future<void> dispose() async {
     super.dispose(); //change here
-    await backgroundPlayer.stop();
+    stopBackgroundAudio();
     await player.stop();
   }
 
+  // loadCamera() {
+  //     cameraController = CameraController(cameras![0], ResolutionPreset.medium);
+  //     cameraController!.initialize().then((value) {
+  //       if(!mounted) {
+  //         return;
+  //       } else {
+  //         setState(() {
+  //           cameraController!.startImageStream((image)  {
+  //             cameraImage = image;
+  //             runModel();
+  //           });
+  //         });
+  //       }
+  //     });
+  // }
 
-  loadCamera() {
-      cameraController = CameraController(cameras![0], ResolutionPreset.medium);
-      cameraController!.initialize().then((value) {
-        if(!mounted) {
-          return;
-        } else {
-          setState(() {
-            cameraController!.startImageStream((image)  {
-              cameraImage = image;
-              runModel();
-            });
-          });
-        }
-      });
-
-  }
-
-  // TODO: Implement trained model
-  runModel() async {
-    if(cameraImage != null) {
-      // https://www.youtube.com/watch?v=R_gTJCBfDu0&t=571s
-    }
-  }
+  //// TODO: Implement trained model
+  // runModel() async {
+  //   if(cameraImage != null) {
+  //     // https://www.youtube.com/watch?v=R_gTJCBfDu0&t=571s
+  //   }
+  // }
 
 
   @override
@@ -215,7 +215,6 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   // play the emotion audio question
   // * use local google teachable model to recognize emotions (happy, sad, angry, fear)
   // errorless teaching format, 6 or 7 seconds for player to make the face before proceeding
-
   // TODO: Create Question page widget
   // TODO: End of story logic
   //sets the position of certain characters based on the event's animationInstruction, increments the event index

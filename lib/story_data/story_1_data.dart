@@ -1,23 +1,18 @@
 import '../model/story.dart';
 import '../model/character.dart';
 import '../model/event.dart';
+import 'image_maps.dart';
 
-class StoryController {
+class StoryDataOne {
     static List<Character> characterList = [
       Character(Id: "A", position: -3, emotion: 'default',
-          imageDict: {'default': 'assets/images/characters/boy_thinking.png',
-            'happy': 'assets/images/characters/boy_happy.png',
-            'nervous': 'assets/images/characters/boy_nervous.png',
-            'sad': 'assets/images/characters/boy_sad.png',
-            'angry': 'assets/images/characters/boy_angry.png',
-            'fear': 'assets/images/characters/boy_fear.png'
-          }, enlarged: false),
+          imageDict: mainBoyImageMap, enlarged: false),
       Character(Id: "B", position: -2, emotion: 'default',
           imageDict: {"default": 'assets/images/characters/mother_ice_cream.png'}, enlarged: false),
       Character(Id: "C", position: 8, emotion: 'default',
           imageDict: {'default': 'assets/images/characters/ice_cream_man.png'}, enlarged: false),
       Character(Id :"D", position: -5, emotion: 'default',
-          imageDict: {'default': 'assets/images/characters/ice_cream_man.png'}, enlarged: false),
+          imageDict: {'default': 'assets/images/characters/placeholder.png'}, enlarged: false),
     ];
     static List<Event> eventList = [
       Event(duration: Duration(seconds: 5), audioPath: "audio/narration/1/story_1_narration_1.mp3", isQuestionEvent: false,

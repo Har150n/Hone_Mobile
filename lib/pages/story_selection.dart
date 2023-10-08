@@ -85,13 +85,13 @@ class _StorySelectionState extends State<StorySelection> {
                   childAspectRatio: 7 / 4,
                   children: [
                     StoryBox(
-                        StoryController.storyMap['Ice Cream in the Park']!),
+                        StoryDataOne.storyMap['Ice Cream in the Park']!),
                     StoryBox(
-                        StoryController.storyMap['Ice Cream in the Park']!),
+                        StoryDataOne.storyMap['Ice Cream in the Park']!),
                     StoryBox(
-                        StoryController.storyMap['Ice Cream in the Park']!),
+                        StoryDataOne.storyMap['Ice Cream in the Park']!),
                     StoryBox(
-                        StoryController.storyMap['Ice Cream in the Park']!)
+                        StoryDataOne.storyMap['Ice Cream in the Park']!)
                   ],
                 ),
               ),
