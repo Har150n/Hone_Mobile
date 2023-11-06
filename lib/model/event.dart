@@ -1,23 +1,45 @@
-
 // Holds event data
 // If audioPath is null, no sound is played
 // If animationInstruction is null, no animation is done
 // If emotionInstruction is null, no image is changed
+import 'question.dart';
+
 class Event {
-  Event ({
+  Event({
     required this.duration,
     required this.audioPath,
-    required this.isQuestionEvent,
+  });
+  Duration duration;
+  String audioPath;
+}
+
+class QuestionEvent extends Event {
+  QuestionEvent({
+    required Duration duration,
+    required String audioPath,
+    required this.question,
+  }) : super(
+          duration: duration,
+          audioPath: audioPath,
+        );
+  Question question;
+}
+
+class GeneralEvent extends Event {
+  GeneralEvent({
+    required Duration duration,
+    required String audioPath,
     required this.animationInstruction,
     required this.emotionInstruction,
     required this.enlargeInstruction,
-});
-  Duration duration;
-  String audioPath;
-  bool isQuestionEvent;         //
-  String animationInstruction;  // Ex: "A0B1C5"     -> moves character A to position 0, B to position, ...
-  String emotionInstruction;    // Ex: "Anervous"   -> makes character A's image nervous
-  String enlargeInstruction;    // Ex: "A"          -> indicate character(s) is speaking
-
-
+}) : super(
+    duration: duration,
+    audioPath: audioPath,
+  );
+  String
+  animationInstruction; // Ex: "A0B1C5"     -> moves character A to position 0, B to position, ...
+  String
+  emotionInstruction; // Ex: "Anervous"   -> makes character A's image nervous
+  String
+  enlargeInstruction; // Ex: "A"          -> indicate character(s) is speaking
 }

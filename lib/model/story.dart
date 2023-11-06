@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'character.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'event.dart';
 
 class Story {
@@ -16,6 +14,19 @@ class Story {
     required this.backgroundImagePath, required this.events,
     required this.characters, required this.initialPositions,
     required this.initialEmotions});
+
+  List<Event> getEvents() {
+    return events;
+  }
+
+  String getBackgroundIMagePath() {
+    return backgroundImagePath;
+  }
+
+  String getTitle() {
+    return title;
+  }
+
 
 }
 

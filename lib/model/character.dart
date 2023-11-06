@@ -27,4 +27,13 @@ class Character{
     this.imagePath = this.imageDict[this.emotion]!;
   }
 
+  String getId() {
+    return Id;
+  }
+
+  @override
+  String toString() {
+    return 'Character: position=$position, emotion=$emotion';
+  }
+
 }
