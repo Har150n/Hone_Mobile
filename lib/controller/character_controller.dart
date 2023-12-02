@@ -16,6 +16,7 @@ class CharacterController {
   int eventIndex = 0;
   List<int> initialPositions = [];
   List<String> initialEmotions = [];
+  int currentBackgroundIndex = 1;
   
   // audio controller
   var player = AudioPlayer();
@@ -34,8 +35,8 @@ class CharacterController {
     events = this.story.events;
   }
 
+  // reset the positions and emotions of the characters
   void initialize() {
-    // reset the positions and emotions of the characters
     for (int i = 0; i < characterList.length; i++) {
       characterList[i].position = initialPositions[i];
       characterList[i].emotion = initialEmotions[i];
@@ -49,9 +50,7 @@ class CharacterController {
     backgroundPlayer.setVolume(0.3);
     playLoopedAudio("audio/background_music.mp3");
   }
-  
-  // TODO: Create Question page widget
-  // TODO: End of story logic
+
   //sets the position of certain characters based on the event's animationInstruction, increments the event index
   //returns false if it is the final event, true if not
   bool nextEvent() {
@@ -75,29 +74,35 @@ class CharacterController {
   // HELPER FUNCTIONS FOR nextEvent()
 
   void processGeneralEvent(GeneralEvent event) {
-    if (!event.emotionInstruction.isEmpty) {
+    if (event.emotionInstruction.isNotEmpty) {
       setEmotionInstruction(event);
     }
-    if (!event.animationInstruction.isEmpty) {
+    if (event.animationInstruction.isNotEmpty) {
       setAnimationInstruction(event);
     }
-    if (!event.audioPath.isEmpty) {
+    if (event.audioPath.isNotEmpty) {
       narrate(event.audioPath, event.duration);
     }
-    if (!event.enlargeInstruction.isEmpty) {
+    if (event.enlargeInstruction.isNotEmpty) {
       setEnlarge(event);
+    }
+    if(event.backgroundInstruction != -1) {
+      setBackground(event);
     }
   }
 
   // changes the emotion of the character based on the event object
   void setEmotionInstruction(GeneralEvent event) {
-    String characterEmotionId = event.emotionInstruction[0];
-    String newEmotion = event.emotionInstruction.substring(1);
-    for (Character character in characterList)
-      if (character.getId() == characterEmotionId ){
-        character.emotion = newEmotion;
-        character.setImagePath();
-      }
+    List<String> instructionList = event.emotionInstruction.split(' ');
+    for (String instruction in instructionList) {
+      String characterEmotionId = instruction[0];
+      String newEmotion = instruction.substring(1);
+      for (Character character in characterList)
+        if (character.getId() == characterEmotionId) {
+          character.emotion = newEmotion;
+          character.setImagePath();
+        }
+    }
   }
 
   //  changes the character's position based on event object
@@ -127,6 +132,11 @@ class CharacterController {
         }
       }
     }
+  }
+
+  // sets the background
+  void setBackground(GeneralEvent event) {
+    this.currentBackgroundIndex = event.backgroundInstruction;
   }
 
   void narrate(String audioFilePath, Duration duration) async {
@@ -191,91 +201,4 @@ class CharacterController {
   List<Character> getCharacterList() {
     return characterList;
   }
-  // Character getCharA() {
-  //   return charA;
-  // }
-  //
-  // Character getCharB() {
-  //   return charB;
-  // }
-  //
-  // Character getCharC() {
-  //   return charC;
-  // }
-  //
-  // Character getCharD() {
-  //   return charD;
-  // }
-
-// charA.position = initialPositions[0];
-// charA.emotion = initialEmotions[0];
-// charA.setImagePath();
-// charA.enlarged = false;
-//
-// charB.position = initialPositions[1];
-// charB.emotion = initialEmotions[1];
-// charB.setImagePath();
-// charB.enlarged = false;
-//
-// charC.position = initialPositions[2];
-// charC.emotion = initialEmotions[2];
-// charC.setImagePath();
-// charC.enlarged = false;
-//
-// charD.position = initialPositions[3];
-// charD.emotion = initialEmotions[3];
-// charD.setImagePath();
-// charD.enlarged = false;
-
-// sets new position based on event
-// if (characterAnimationId == "A") {
-//   charA.position = newPosition;
-// } else if (characterAnimationId == "B") {
-//   charB.position = newPosition;
-// } else if (characterAnimationId == "C") {
-//   charC.position = newPosition;
-// } else if (characterAnimationId == "D") {
-//   charD.position = newPosition;
-// } else {
-//   throw Exception('event not valid');
-// }
-
-
-// sets new emotion based on event
-// if (characterEmotionId == "A") {
-//   charA.emotion = newEmotion;
-//   charA.setImagePath();
-// } else if (characterEmotionId == "B") {
-//   charB.emotion = newEmotion;
-//   charB.setImagePath();
-// } else if (characterEmotionId == "C") {
-//   charC.emotion = newEmotion;
-//   charC.setImagePath();
-// } else if (characterEmotionId == "D") {
-//   charD.emotion = newEmotion;
-//   charD.setImagePath();
-// } else {
-//   throw Exception('event not valid');
-// }
-
-// if (enlargeId == "A") {
-//   charA.enlarged = true;
-//   // waits for event to finish before reverting to normal size
-//   await Future.delayed(event.duration);
-//   charA.enlarged = false;
-// } else if (enlargeId == "B") {
-//   charB.enlarged = true;
-//   await Future.delayed(event.duration);
-//   charB.enlarged = false;
-// } else if (enlargeId == "C") {
-//   charC.enlarged = true;
-//   await Future.delayed(event.duration);
-//   charC.enlarged = false;
-// } else if (enlargeId == "D") {
-//   await Future.delayed(event.duration);
-//   charD.enlarged = false;
-// } else {
-//   throw Exception('event not valid');
-// }
-
 }

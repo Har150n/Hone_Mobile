@@ -37,6 +37,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  carousel_slider: ^4.2.1
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -63,10 +65,32 @@ flutter:
   assets:
     - assets/images/
     - assets/images/characters/
-    - assets/images/stories/
+    - assets/images/characters/story_1/
+    - assets/images/characters/story_2/
+    - assets/images/characters/story_3/
+    - assets/images/characters/story_4/
+    - assets/images/characters/story_5/
+    - assets/images/characters/story_6/
+    - assets/images/characters/story_7/
+    - assets/images/characters/general/
+    - assets/images/backdrops/
+    - assets/images/backdrops/story_1/
+    - assets/images/backdrops/story_2/
+    - assets/images/backdrops/story_3/
+    - assets/images/backdrops/story_4/
+    - assets/images/backdrops/story_5/
+    - assets/images/backdrops/story_6/
+    - assets/images/backdrops/story_7/
+    - assets/audio/narration/2/
     - assets/audio/
     - assets/audio/narration/
     - assets/audio/narration/1/
+    - assets/audio/narration/2/
+    - assets/audio/narration/3/
+    - assets/audio/narration/4/
+    - assets/audio/narration/5/
+    - assets/audio/narration/6/
+    - assets/audio/narration/7/
 
   fonts:
     - family: Overpass_Mono

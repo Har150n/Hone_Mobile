@@ -1,0 +1,5 @@
+- Fix render overflow of stories on story selection X
+- Have Elise record Murf Jimmy script
+- Revamped Title screen UI
+- Add audio to correct and wrong answers
+- music for start page and story selection

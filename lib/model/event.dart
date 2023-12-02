@@ -32,6 +32,7 @@ class GeneralEvent extends Event {
     required this.animationInstruction,
     required this.emotionInstruction,
     required this.enlargeInstruction,
+    required this.backgroundInstruction,
 }) : super(
     duration: duration,
     audioPath: audioPath,
@@ -39,7 +40,10 @@ class GeneralEvent extends Event {
   String
   animationInstruction; // Ex: "A0B1C5"     -> moves character A to position 0, B to position, ...
   String
-  emotionInstruction; // Ex: "Anervous"   -> makes character A's image nervous
+  emotionInstruction; // Ex: "Anervous" "Anervous Bhappy_ice_cream   -> makes character A's image nervous
   String
   enlargeInstruction; // Ex: "A"          -> indicate character(s) is speaking
+  int
+  backgroundInstruction;
+
 }

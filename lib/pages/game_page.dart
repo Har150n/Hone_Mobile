@@ -6,10 +6,12 @@ import '../model/event.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../helper_functions/background_audio.dart';
 import '../model/character.dart';
+import '../widgets/text.dart';
 // import 'package:camera/camera.dart';
 
 class Game extends StatefulWidget {
   final Story story;
+
   Game({required this.story}) {}
 
   @override
@@ -27,10 +29,11 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
 
   // background audio controller
   var backgroundPlayer = AudioPlayer();
-  
+
   _GameState({required story}) {
-    characterController = CharacterController(story: story, 
-        updateAudioPlaying: AudioBoolChanged, 
+    characterController = CharacterController(
+        story: story,
+        updateAudioPlaying: AudioBoolChanged,
         updateQuestionEvent: QuestionBoolChanged);
     events = story.getEvents();
   }
@@ -50,15 +53,14 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
     await characterController.player.stop();
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    
+
     // multiplier to determine correct scaling of character positioning
     double positionMultiplier = screenWidth / 8;
-    
+
     double distanceFromTop = screenHeight / 3;
     double enlargedHeight = screenHeight / 2;
     double normalHeight = screenHeight / 2.3;
@@ -69,60 +71,74 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
 
     return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(story.getBackgroundIMagePath()),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(children: [
-            CustomAppBar(
-              title: story.getTitle(),
-              onPressed: () {
-                Navigator.pop(context); // Navigates to the previous screen
-              },
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: characterController.getAudioPlaying()? null : () {
-                  setState(() {
-                    // if last event, exit to screen
-                    if (!characterController.nextEvent()) {
-                      exitScreen();
-                    };
-                  });
-                },
-                child: Stack(
-                    children: [
-                      for (Character character in characters)
-                        AnimatedPositioned(
-                          height: character.enlarged ? enlargedHeight : normalHeight,
-                          left: character.position * positionMultiplier,
-                          top: distanceFromTop,
-                          duration: animationDuration,
-                          child: Image.asset(character.imagePath, fit: BoxFit.fitHeight),
-                        ),
-
-                    ]
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(story.getBackgroundImagePath(this.characterController.currentBackgroundIndex)),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Column(children: [
+        CustomAppBar(
+          title: story.getTitle(),
+          onPressed: () {
+            Navigator.pop(context); // Navigates to the previous screen
+          },
+        ),
+        Expanded(
+          child: InkWell(
+            onTap: characterController.getAudioPlaying()
+                ? null
+                : () {
+                    setState(() {
+                      // if last event, exit to screen
+                      if (!characterController.nextEvent()) {
+                        exitScreen();
+                      }
+                      ;
+                    });
+                  },
+            child: Stack(children: [
+              for (Character character in characters)
+                AnimatedPositioned(
+                  height: character.enlarged ? enlargedHeight : normalHeight,
+                  left: character.position * positionMultiplier,
+                  top: distanceFromTop,
+                  duration: animationDuration,
+                  child:
+                      Image.asset(character.imagePath, fit: BoxFit.fitHeight),
                 ),
-              ),
-            ),
-            Visibility(visible: isQuestionEvent,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // To evenly space the buttons
-                  children: characterController.currentQuestion.emotions.map((option) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        // Add your button click logic here
-                        characterController.processAnswer(option);
-                      },
-                      child: Text(option),
-                    );
-                  }).toList(),
-                )
-            )
-          ]),
-        ));
+            ]),
+          ),
+        ),
+        // Answer Buttons
+        Visibility(
+            visible: isQuestionEvent,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              // To evenly space the buttons
+              children:
+                  characterController.currentQuestion.emotions.map((option) {
+                return ElevatedButton(
+                  onPressed: () {
+                    // Add your button click logic here
+                    characterController.processAnswer(option);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    // Sets the button color to orange
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          8.0),
+                    ),
+                    minimumSize: Size(screenWidth/6, screenWidth/24)
+                  ),
+                  child: Text(option, style: TextStyles.subtitleText),
+                );
+              }).toList(),
+            ))
+      ]),
+    ));
   }
 
   // sets audio playing
@@ -145,14 +161,6 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
     Navigator.pop(context);
   }
 }
-
-
-
-
-
-
-
-
 
 //// list of cameras
 // CameraImage? cameraImage;
@@ -224,4 +232,3 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
 // } else {
 //   cameraController = null;
 // }
-
