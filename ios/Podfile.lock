@@ -1,35 +1,53 @@
 PODS:
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - camera_avfoundation (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - purchases_flutter (6.5.0):
+    - Flutter
+    - PurchasesHybridCommon (= 8.1.0)
+  - PurchasesHybridCommon (8.1.0):
+    - RevenueCat (= 4.31.1)
+  - RevenueCat (4.31.1)
+  - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
 
 DEPENDENCIES:
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
-  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - PurchasesHybridCommon
+    - RevenueCat
 
 EXTERNAL SOURCES:
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
-  camera_avfoundation:
-    :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  purchases_flutter:
+    :path: ".symlinks/plugins/purchases_flutter/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  purchases_flutter: 437e9c2ba0619a8c502a4036d3e0ea78c870d429
+  PurchasesHybridCommon: 8920b878fd7b5e2b358b24c6c37592259655657a
+  RevenueCat: 3d9d19d3564c101f7f25a0a4fc10da1a9b04ddbe
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
 
-PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
+PODFILE CHECKSUM: 6b9eb94e9f98a329f2ef624b852a6e42d090af2b
 
 COCOAPODS: 1.12.1

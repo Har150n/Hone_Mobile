@@ -12,11 +12,13 @@ class Story {
   final List<String> initialEmotions;
   // determines background for story selection page (defaults to 1)
   int coverBackgroundIndex;
+  final String backgroundAudioPath;
 
   Story({required this.storyNum,required this.title,
     required this.backgroundImagePath, required this.events,
     required this.characters, required this.initialPositions,
-    required this.initialEmotions, this.coverBackgroundIndex = 1});
+    required this.initialEmotions, this.coverBackgroundIndex = 1,
+    required this.backgroundAudioPath});
 
   List<Event> getEvents() {
     return events;

@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import '../model/story.dart';
-import '../model/character.dart';
-import '../helper_functions/background_audio.dart';
-import '../model/event.dart';
+import 'package:hone_mobile/model/story.dart';
+import 'package:hone_mobile/model/character.dart';
+import 'package:hone_mobile/helper_functions/background_audio.dart';
+import 'package:hone_mobile/model/event.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../model/question.dart';
+import 'package:hone_mobile/model/question.dart';
+import 'package:hone_mobile/story_data/common_paths.dart';
+import 'package:hone_mobile/helper_functions/shared_preferences.dart';
+import 'package:hone_mobile/helper_functions/sound_effect_audio.dart';
+
 
 class CharacterController {
   Story story;
@@ -19,16 +23,19 @@ class CharacterController {
   int currentBackgroundIndex = 1;
   
   // audio controller
-  var player = AudioPlayer();
+  var dialoguePlayer = AudioPlayer();
   bool isAudioPlaying = false;
   
   // callback function to update bools in game_page.dart
   final ValueChanged<bool> updateAudioPlaying;
   final ValueChanged<bool> updateQuestionEvent;
-  
+  final ValueChanged<bool> updateIsCorrect;
+
   CharacterController({
     required this.story, required this.updateAudioPlaying,
-    required this.updateQuestionEvent}) {
+    required this.updateQuestionEvent,
+    required this.updateIsCorrect}) {
+
     initialPositions = story.initialPositions;
     initialEmotions = story.initialEmotions;
     characterList = this.story.characters;
@@ -37,6 +44,7 @@ class CharacterController {
 
   // reset the positions and emotions of the characters
   void initialize() {
+    playLoopedAudio(this.story.backgroundAudioPath);
     for (int i = 0; i < characterList.length; i++) {
       characterList[i].position = initialPositions[i];
       characterList[i].emotion = initialEmotions[i];
@@ -45,10 +53,6 @@ class CharacterController {
     }
     // resets events
     eventIndex = 0;
-
-    // play background music
-    backgroundPlayer.setVolume(0.3);
-    playLoopedAudio("audio/background_music.mp3");
   }
 
   //sets the position of certain characters based on the event's animationInstruction, increments the event index
@@ -56,7 +60,7 @@ class CharacterController {
   bool nextEvent() {
     if (events[eventIndex] is GeneralEvent) {
       GeneralEvent genEvent = events[eventIndex] as GeneralEvent;
-      processGeneralEvent(genEvent);
+      processGeneralEvent(genEvent, eventIndex + 1 == events.length);
     } else if (events[eventIndex] is QuestionEvent) {
       QuestionEvent questEvent = events[eventIndex] as QuestionEvent;
       processQuestionEvent(questEvent);
@@ -64,6 +68,7 @@ class CharacterController {
     //increment event
     if (eventIndex + 1 >= events.length) {
       eventIndex = 0;
+      addCompletedLevel(this.story.storyNum);
       return false;
     } else {
       eventIndex += 1;
@@ -73,7 +78,10 @@ class CharacterController {
 
   // HELPER FUNCTIONS FOR nextEvent()
 
-  void processGeneralEvent(GeneralEvent event) {
+  void processGeneralEvent(GeneralEvent event, bool lastEvent) {
+    // Disables clicking
+    isAudioPlaying = true;
+    updateAudioPlaying(isAudioPlaying);
     if (event.emotionInstruction.isNotEmpty) {
       setEmotionInstruction(event);
     }
@@ -81,7 +89,7 @@ class CharacterController {
       setAnimationInstruction(event);
     }
     if (event.audioPath.isNotEmpty) {
-      narrate(event.audioPath, event.duration);
+      narrate(event.audioPath);
     }
     if (event.enlargeInstruction.isNotEmpty) {
       setEnlarge(event);
@@ -89,7 +97,65 @@ class CharacterController {
     if(event.backgroundInstruction != -1) {
       setBackground(event);
     }
+    // doesn't reenable clicking if last event
+    if(!lastEvent) {
+      delayEnableClicking(event.duration);
+    }
   }
+
+  // Processes question event
+  void processQuestionEvent(QuestionEvent questEvent) {
+    disableClicking();
+    this.currentQuestion = questEvent.question;
+    // makes question widget visible using callback function
+    updateQuestionEvent(true);
+    if (!questEvent.audioPath.isEmpty) {
+      narrate(questEvent.audioPath);
+    }
+  }
+
+  // awaits user input from game_page
+  // returns True if answer matches the current question's answer
+  bool processAnswer(String answer) {
+    if (this.currentQuestion != null) {
+      if (answer == this.currentQuestion.answer) {
+        soundEffectPlayer.play(AssetSource(correctAnswerAudioPath));
+        resetQuestionState();
+        return true;
+      } else {
+        soundEffectPlayer.play(AssetSource(whoopAudioPath));
+      return false;
+      }
+    } else {
+      throw("current question does not exist");
+    }
+  }
+
+  // gets rid of question widget after a delay
+  // make screen clickable
+  // makes the button color white again
+  void resetQuestionState() async {
+    await Future.delayed(Duration(seconds: 1));
+    isAudioPlaying = false;
+    updateQuestionEvent(false);
+    updateAudioPlaying(false);
+    updateIsCorrect(false);
+    nextEvent();
+  }
+
+  // waits for the given duration and then enables clicking
+  void delayEnableClicking(Duration duration) async {
+    await Future.delayed(duration);
+    isAudioPlaying = false;
+    updateAudioPlaying(isAudioPlaying);
+  }
+
+  // disables clicking
+  void disableClicking() {
+    isAudioPlaying = true;
+    updateAudioPlaying(isAudioPlaying);
+  }
+
 
   // changes the emotion of the character based on the event object
   void setEmotionInstruction(GeneralEvent event) {
@@ -107,15 +173,14 @@ class CharacterController {
 
   //  changes the character's position based on event object
   void setAnimationInstruction(GeneralEvent event) {
-    for (int i = 0; i < event.animationInstruction.length; i += 2) {
-      String characterAnimationId = event.animationInstruction[i];
-      int newPosition = int.parse(event.animationInstruction[i + 1]);
-
+    List<String> instructionList = event.animationInstruction.split(' ');
+    for (String instruction in instructionList) {
+      String characterAnimationId = instruction[0];
+      int newPosition = int.parse(instruction.substring(1));
       for (Character character in characterList)
         if (character.getId() == characterAnimationId) {
           character.position = newPosition;
         }
-
     }
   }
 
@@ -139,54 +204,9 @@ class CharacterController {
     this.currentBackgroundIndex = event.backgroundInstruction;
   }
 
-  void narrate(String audioFilePath, Duration duration) async {
-    // Disables clicking
-    isAudioPlaying = true;
-    updateAudioPlaying(isAudioPlaying);
-
+  void narrate(String audioFilePath) {
     // Play the audio
-    await player.play(AssetSource(audioFilePath));
-
-    // Delay to wait for the specified duration
-    await Future.delayed(duration);
-
-    // Enables clicking after the delay
-    isAudioPlaying = false;
-    updateAudioPlaying(isAudioPlaying);
-  }
-
-  // Processes question event
-  void processQuestionEvent(QuestionEvent questEvent) {
-    // sets cur question so it can be accessed by game_page.dart
-    this.currentQuestion = questEvent.question;
-    // makes question widget visible using callback function
-    updateQuestionEvent(true);
-    // disables clicking so can't go to next event
-    updateAudioPlaying(true);
-
-    if (!questEvent.audioPath.isEmpty) {
-      narrate(questEvent.audioPath, questEvent.duration);
-    }
-  }
-
-  // awaits user input from game_page
-  // returns True if answer matches the current question's answer
-  Future<bool> processAnswer(String answer) async {
-    if (this.currentQuestion != null) {
-      if (answer == this.currentQuestion.answer) {
-        // play correct sound
-        await Future.delayed(Duration(seconds: 1));
-        updateQuestionEvent(false);
-        updateAudioPlaying(false);
-        nextEvent();
-        return true;
-      } else {
-      return false;
-      }
-    } else {
-      throw("current question does not exist");
-    }
-
+    dialoguePlayer.play(AssetSource(audioFilePath));
   }
 
   // Getters and Setters

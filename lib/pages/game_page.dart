@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hone_mobile/controller/character_controller.dart';
-import '../widgets/custom_app_bar.dart';
-import '../model/story.dart';
-import '../model/event.dart';
-import 'package:audioplayers/audioplayers.dart';
-import '../helper_functions/background_audio.dart';
-import '../model/character.dart';
-import '../widgets/text.dart';
-// import 'package:camera/camera.dart';
+import 'package:hone_mobile/widgets/custom_app_bar.dart';
+import 'package:hone_mobile/model/story.dart';
+import 'package:hone_mobile/model/event.dart';
+import 'package:hone_mobile/helper_functions/background_audio.dart';
+import 'package:hone_mobile/model/character.dart';
+import 'package:hone_mobile/widgets/text.dart';
+import 'package:hone_mobile/story_data/common_paths.dart';
+import 'package:flutter_shakemywidget/flutter_shakemywidget.dart';
 
 class Game extends StatefulWidget {
   final Story story;
@@ -26,15 +26,18 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   late CharacterController characterController;
   bool isAudioPlaying = false;
   bool isQuestionEvent = false;
+  bool isCorrect = false; // turns true if answer is correct
 
-  // background audio controller
-  var backgroundPlayer = AudioPlayer();
+  // key to trigger button shakes
+  final shakeKey = GlobalKey<ShakeWidgetState>();
+  int shakeNum = 1;
 
   _GameState({required story}) {
     characterController = CharacterController(
         story: story,
         updateAudioPlaying: AudioBoolChanged,
-        updateQuestionEvent: QuestionBoolChanged);
+        updateQuestionEvent: QuestionBoolChanged,
+        updateIsCorrect: IsCorrectBoolChanged);
     events = story.getEvents();
   }
 
@@ -48,9 +51,9 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   // stop background music
   @override
   Future<void> dispose() async {
-    super.dispose(); //change here
-    stopBackgroundAudio();
-    await characterController.player.stop();
+    super.dispose();
+    playLoopedAudio(mainBackgroundAudioPath);
+    await characterController.dialoguePlayer.stop();
   }
 
   @override
@@ -74,7 +77,8 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
       padding: const EdgeInsets.symmetric(vertical: 24.0),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(story.getBackgroundImagePath(this.characterController.currentBackgroundIndex)),
+          image: AssetImage(story.getBackgroundImagePath(
+              this.characterController.currentBackgroundIndex)),
           fit: BoxFit.cover,
         ),
       ),
@@ -112,31 +116,45 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
           ),
         ),
         // Answer Buttons
-        Visibility(
-            visible: isQuestionEvent,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              // To evenly space the buttons
-              children:
-                  characterController.currentQuestion.emotions.map((option) {
-                return ElevatedButton(
-                  onPressed: () {
-                    // Add your button click logic here
-                    characterController.processAnswer(option);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    // Sets the button color to orange
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          8.0),
-                    ),
-                    minimumSize: Size(screenWidth/6, screenWidth/24)
-                  ),
-                  child: Text(option, style: TextStyles.subtitleText),
-                );
-              }).toList(),
-            ))
+        ShakeMe(
+            key: shakeKey,
+            shakeCount: shakeNum,
+            shakeOffset: 5,
+            shakeDuration: Duration(milliseconds: 500),
+            child: Visibility(
+                visible: isQuestionEvent,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // To evenly space the buttons
+                  children: characterController.currentQuestion.emotions
+                      .map((option) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        if (characterController.processAnswer(option)) {
+                          setState(() {
+                            shakeNum = 1;
+                            shakeKey.currentState?.shake();
+                            isCorrect = true;
+                          });
+                        } else {
+                            setState(() {
+                              shakeNum = 2;
+                              shakeKey.currentState?.shake();
+                            });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              isCorrect ? Colors.green : Colors.white,
+                          // Sets the button color to orange
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          minimumSize: Size(screenWidth / 6, screenWidth / 24)),
+                      child: Text(option, style: TextStyles.subtitleText),
+                    );
+                  }).toList(),
+                )))
       ]),
     ));
   }
@@ -155,6 +173,13 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
     });
   }
 
+  // sets answer to correct
+  void IsCorrectBoolChanged(bool isCorrect) {
+    setState(() {
+      this.isCorrect = isCorrect;
+    });
+  }
+
   // returns to Story Selection after a Delay
   void exitScreen() async {
     await Future.delayed(Duration(seconds: 3));
@@ -162,73 +187,3 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   }
 }
 
-//// list of cameras
-// CameraImage? cameraImage;
-// CameraController? cameraController;
-// loadCamera() {
-//     cameraController = CameraController(cameras![0], ResolutionPreset.medium);
-//     cameraController!.initialize().then((value) {
-//       if(!mounted) {
-//         return;
-//       } else {
-//         setState(() {
-//           cameraController!.startImageStream((image)  {
-//             cameraImage = image;
-//             runModel();
-//           });
-//         });
-//       }
-//     });
-// }
-//// TODO: Implement trained model
-// runModel() async {
-//   if(cameraImage != null) {
-//     // https://www.youtube.com/watch?v=R_gTJCBfDu0&t=571s
-//   }
-// }
-// Container(
-//     height: MediaQuery.of(context).size.height * 0.2,
-//     width: MediaQuery.of(context).size.height * 0.1,
-//     child: cameraController == null ?
-//     Icon(Icons.camera):
-//     AspectRatio(
-//         aspectRatio: cameraController!.value.aspectRatio,
-//         child: CameraPreview(cameraController!)
-//     )
-
-// previous animatedpositioned
-// AnimatedPositioned(
-//     height: charA.enlarged ? enlargedHeight : normalHeight,
-//     left: charA.position * positionMultiplier,
-//     top: distanceFromTop,
-//     duration: animationDuration,
-//     child: Image.asset(charA.imagePath,
-//         fit: BoxFit.fitHeight, )),
-// AnimatedPositioned(
-//     height: charB.enlarged ? enlargedHeight : normalHeight,
-//     left: charB.position * positionMultiplier,
-//     top: distanceFromTop,
-//     duration: animationDuration,
-//     child: Image.asset(charB.imagePath,
-//         fit: BoxFit.fitHeight, )),
-// AnimatedPositioned(
-//     height: charC.enlarged ? enlargedHeight : normalHeight,
-//     left: charC.position * positionMultiplier,
-//     top: distanceFromTop,
-//     duration: animationDuration,
-//     child: Image.asset(charC.imagePath,
-//         fit: BoxFit.fitHeight, )),
-// AnimatedPositioned(
-//     height: charD.enlarged ? enlargedHeight : normalHeight,
-//     left: charD.position * positionMultiplier,
-//     top: distanceFromTop,
-//     duration: animationDuration,
-//     child: Image.asset(charD.imagePath,
-//       fit: BoxFit.fitHeight, )),
-
-//// initialize camera (put inside initState())
-// if(cameras!.length != 0 ) {
-//   loadCamera();
-// } else {
-//   cameraController = null;
-// }

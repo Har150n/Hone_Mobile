@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'text.dart';
+import 'package:hone_mobile/widgets/text.dart';
+import 'package:hone_mobile/widgets/rounded_white_container.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;
@@ -12,21 +13,26 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20, left: 20),
-      child: Row(
+    return Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            iconSize: 25,
-            color: Colors.black,
-            onPressed: () => onPressed(),
+          RoundedWhiteContainer(
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  iconSize: 25,
+                  color: Colors.black,
+                  onPressed: () => onPressed(),
+                ),
+                Text(title,
+                    style: TextStyles.subtitleText
+                ),
+              ]
+            ),
+            padding: 4,
           ),
-          Text(title,
-              style: TextStyles.subtitleText
-          ),
+          Expanded(child: SizedBox(height: 0.0)),
         ],
-      ),
-    );
+      );
   }
 }

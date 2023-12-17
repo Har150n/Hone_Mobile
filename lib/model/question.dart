@@ -1,5 +1,3 @@
-import 'character.dart';
-import 'event.dart';
 
 // Represents the data inside a question
 class Question {
