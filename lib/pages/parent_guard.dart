@@ -42,9 +42,9 @@ class _ParentGuardState extends State<ParentGuard> {
                   },
                 ),
                 Expanded(child: SizedBox(height: 0.0)),
-                Text('Ask your parents!', style: TextStyles.titleText),
+                Text('Ask your parents!', style: TextStyles.headingText(context)),
                 SizedBox(height: 16),
-                Text(question.question, style: TextStyles.headingText),
+                Text(question.question, style: TextStyles.subtitleText(context)),
                 SizedBox(height: 16),
                 Visibility(
                   visible: enableClicking,
@@ -69,7 +69,7 @@ class _ParentGuardState extends State<ParentGuard> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             minimumSize: Size(screenWidth / 6, screenWidth / 24)),
-                        child: Text(option, style: TextStyles.text),
+                        child: Text(option, style: TextStyles.text(context)),
                       );
                     }).toList(),
                   ),

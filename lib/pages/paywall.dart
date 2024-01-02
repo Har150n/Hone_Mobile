@@ -3,6 +3,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:hone_mobile/constant.dart';
 import 'package:hone_mobile/model/singletons_data.dart';
 import 'package:hone_mobile/widgets/text.dart';
+import 'package:hone_mobile/pages/tos.dart';
 
 class Paywall extends StatefulWidget {
   final Offering offering;
@@ -16,6 +17,8 @@ class Paywall extends StatefulWidget {
 class _PaywallState extends State<Paywall> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
       child: SafeArea(
         child: Wrap(
@@ -23,13 +26,24 @@ class _PaywallState extends State<Paywall> {
             Container(
               height: 70.0,
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius:
                       BorderRadius.vertical(top: Radius.circular(25.0))),
-              child: const Center(
+              child: Center(
                   child: Text('Unlock all Emoquest Stories!',
-                      style: TextStyles.subtitleText)),
+                      style: TextStyles.subtitleText(context))),
+            ),
+            Container(
+              height: 50.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(25.0))),
+              child: Center(
+                  child: Text('A new story every month!',
+                      style: TextStyles.biggerText(context))),
             ),
             ListView.builder(
               itemCount: widget.offering.availablePackages.length,
@@ -56,22 +70,22 @@ class _PaywallState extends State<Paywall> {
                       },
                       title: Text(
                         myProductList[index].storeProduct.title,
-                        style: TextStyles.headingText,
+                        style: TextStyles.headingText(context),
                       ),
                       subtitle: Text(
                         myProductList[index].storeProduct.description,
-                        style: TextStyles.text,
+                        style: TextStyles.text(context),
                       ),
                       trailing: Text(
                           myProductList[index].storeProduct.priceString,
-                          style: TextStyles.subtitleText)),
+                          style: TextStyles.subtitleText(context))),
                 );
               },
               shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
+              physics: ClampingScrollPhysics(),
             ),
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
               ),
               child: Padding(
@@ -80,12 +94,45 @@ class _PaywallState extends State<Paywall> {
                 child: SizedBox(
                   child: Text(
                     footer,
-                    style: TextStyles.text,
+                    style: TextStyles.text(context),
                   ),
                   width: double.infinity,
                 ),
               ),
             ),
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/tos');
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  // Sets the button color to orange
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  minimumSize: Size(screenWidth / 6, screenWidth / 24)),
+              child: Text('Terms of Service',
+                  style: TextStyles.subtitleText(context)),
+            ),
+            SizedBox(width: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/privacy');
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  // Sets the button color to orange
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  minimumSize: Size(screenWidth / 6, screenWidth / 24)),
+              child: Text('Privacy Policy',
+                  style: TextStyles.subtitleText(context)),
+            ),
+          ],
+        )
           ],
         ),
       ),

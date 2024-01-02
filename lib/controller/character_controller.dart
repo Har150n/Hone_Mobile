@@ -120,6 +120,7 @@ class CharacterController {
     if (this.currentQuestion != null) {
       if (answer == this.currentQuestion.answer) {
         soundEffectPlayer.play(AssetSource(correctAnswerAudioPath));
+        updateIsCorrect(true);
         resetQuestionState();
         return true;
       } else {

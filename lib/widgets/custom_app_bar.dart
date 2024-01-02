@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hone_mobile/widgets/text.dart';
 import 'package:hone_mobile/widgets/rounded_white_container.dart';
+import 'package:hone_mobile/constant.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;
@@ -13,6 +14,9 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = screenHeight / ipadHeight;
+    double scaledPadding = 8 * scaleFactor;
     return Row(
         children: [
           RoundedWhiteContainer(
@@ -25,11 +29,11 @@ class CustomAppBar extends StatelessWidget {
                   onPressed: () => onPressed(),
                 ),
                 Text(title,
-                    style: TextStyles.subtitleText
+                    style: TextStyles.subtitleText(context)
                 ),
               ]
             ),
-            padding: 4,
+            padding: scaledPadding,
           ),
           Expanded(child: SizedBox(height: 0.0)),
         ],

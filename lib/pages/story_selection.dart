@@ -16,7 +16,8 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:hone_mobile/helper_functions/purchases_helper.dart';
 import 'package:hone_mobile/helper_functions/background_audio.dart';
 import 'package:hone_mobile/helper_functions/shared_preferences.dart';
-
+import 'package:hone_mobile/widgets/text.dart';
+import 'package:hone_mobile/constant.dart';
 
 class StorySelection extends StatefulWidget {
   @override
@@ -58,6 +59,9 @@ class _StorySelectionState extends State<StorySelection> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = screenHeight/ ipadHeight;
+    double storyHeight = 600 * scaleFactor;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -74,6 +78,10 @@ class _StorySelectionState extends State<StorySelection> {
                 Navigator.pop(context); // Navigates to the previous screen
               },
             ),
+            SizedBox(height: 50 * scaleFactor),
+             Center(
+                  child: Text('A new story every month!',
+                      style: TextStyles.subtitleText(context))),
             FutureBuilder(
               future: customerInfo,
               builder: (BuildContext context, AsyncSnapshot<CustomerInfo> snapshot) {
@@ -85,7 +93,7 @@ class _StorySelectionState extends State<StorySelection> {
                             children: [
                               CarouselSlider.builder(
                                 options: CarouselOptions(
-                                    height: MediaQuery.of(context).size.height / 1.5,
+                                    height: storyHeight,
                                     viewportFraction: 0.5,
                                     enlargeCenterPage: true,
                                     enlargeStrategy: CenterPageEnlargeStrategy.scale,
@@ -97,8 +105,8 @@ class _StorySelectionState extends State<StorySelection> {
                                       completedLevels.contains(stories[index].storyNum));
                                 },
                               ),
-                              const SizedBox(height: 32),
-                              buildIndicator(),
+
+                              buildIndicator(scaleFactor),
                             ])),
                   );
                 } else {
@@ -116,13 +124,16 @@ class _StorySelectionState extends State<StorySelection> {
   }
 
   // dots on the bottom of carousel
-  Widget buildIndicator() => AnimatedSmoothIndicator(
-        activeIndex: activeIndex,
-        count: stories.length,
-        effect: JumpingDotEffect(
-            dotWidth: 20,
-            dotHeight: 20,
-            dotColor: Colors.grey,
-            activeDotColor: Colors.black),
-      );
+  Widget buildIndicator(double scaleFactor) {
+
+    return AnimatedSmoothIndicator(
+      activeIndex: activeIndex,
+      count: stories.length,
+      effect: JumpingDotEffect(
+          dotWidth: 20 * scaleFactor,
+          dotHeight: 20 * scaleFactor,
+          dotColor: Colors.grey,
+          activeDotColor: Colors.black),
+    );
+  }
 }

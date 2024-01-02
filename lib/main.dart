@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hone_mobile/pages/parent_guard.dart';
+import 'package:hone_mobile/pages/privacy_policy.dart';
+import 'package:hone_mobile/pages/tos.dart';
 import 'package:hone_mobile/story_data/common_paths.dart';
 import 'package:hone_mobile/pages/start_menu.dart';
 import 'package:hone_mobile/pages/story_selection.dart';
@@ -21,14 +23,18 @@ class GameApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Emoquest',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: StartMenu(),
-        routes: {
-          '/storySelection': (context) => StorySelection(),
-          '/parentGuard' : (context) => ParentGuard(),
-        });
+      title: 'Emoquest',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: StartMenu(),
+      routes: {
+        '/storySelection': (context) => StorySelection(),
+        '/parentGuard': (context) => ParentGuard(),
+        '/tos': (context) => TosWidget(),
+        '/privacy': (context) => PrivacyWidget(),
+      },
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

@@ -8,6 +8,7 @@ import 'package:hone_mobile/model/character.dart';
 import 'package:hone_mobile/widgets/text.dart';
 import 'package:hone_mobile/story_data/common_paths.dart';
 import 'package:flutter_shakemywidget/flutter_shakemywidget.dart';
+import 'package:hone_mobile/constant.dart';
 
 class Game extends StatefulWidget {
   final Story story;
@@ -27,6 +28,7 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   bool isAudioPlaying = false;
   bool isQuestionEvent = false;
   bool isCorrect = false; // turns true if answer is correct
+  OverlayEntry? _overlayEntry;
 
   // key to trigger button shakes
   final shakeKey = GlobalKey<ShakeWidgetState>();
@@ -51,6 +53,7 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   // stop background music
   @override
   Future<void> dispose() async {
+    _hideOverlay();
     super.dispose();
     playLoopedAudio(mainBackgroundAudioPath);
     await characterController.dialoguePlayer.stop();
@@ -60,13 +63,17 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
     // multiplier to determine correct scaling of character positioning
     double positionMultiplier = screenWidth / 8;
 
-    double distanceFromTop = screenHeight / 3;
-    double enlargedHeight = screenHeight / 2;
-    double normalHeight = screenHeight / 2.3;
+    double distanceFromTop = (screenHeight / 3);
+    double enlargedHeight = (screenHeight / 2);
+    double normalHeight = (screenHeight / 2.3);
+    if (screenHeight < 500) {
+      distanceFromTop /= 2.5;
+      enlargedHeight *= 1.2;
+      normalHeight *= 1.2;
+    }
     const Duration animationDuration = Duration(milliseconds: 500);
 
     List<Character> characters = characterController.getCharacterList();
@@ -116,47 +123,71 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
           ),
         ),
         // Answer Buttons
-        ShakeMe(
-            key: shakeKey,
-            shakeCount: shakeNum,
-            shakeOffset: 5,
-            shakeDuration: Duration(milliseconds: 500),
-            child: Visibility(
-                visible: isQuestionEvent,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  // To evenly space the buttons
-                  children: characterController.currentQuestion.emotions
-                      .map((option) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        if (characterController.processAnswer(option)) {
-                          setState(() {
-                            shakeNum = 1;
-                            shakeKey.currentState?.shake();
-                            isCorrect = true;
-                          });
-                        } else {
-                            setState(() {
-                              shakeNum = 2;
-                              shakeKey.currentState?.shake();
-                            });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isCorrect ? Colors.green : Colors.white,
-                          // Sets the button color to orange
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          minimumSize: Size(screenWidth / 6, screenWidth / 24)),
-                      child: Text(option, style: TextStyles.subtitleText),
-                    );
-                  }).toList(),
-                )))
       ]),
     ));
+  }
+
+  // hides the button overlay
+  void _hideOverlay() {
+    if(_overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
+  }
+
+  // shows the button overlay
+  void _showOverlay(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = screenHeight / ipadHeight;
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        // You can adjust these to position your overlay as needed
+        left: 0,
+        bottom: 30 * scaleFactor,
+        right: 0,
+        child: Material(
+          color: Colors.transparent,
+          child: ShakeMe(
+              key: shakeKey,
+              shakeCount: shakeNum,
+              shakeOffset: 5,
+              shakeDuration: Duration(milliseconds: 500),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // To evenly space the buttons
+                children: characterController.currentQuestion.emotions
+                    .map((option) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      if (characterController.processAnswer(option)) {
+                        setState(() {
+                          isCorrect = true;
+                        });
+                      } else {
+                        setState(() {
+                          shakeNum = 2;
+                          shakeKey.currentState?.shake();
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        isCorrect ? Colors.green : Colors.white,
+                        // Sets the button color to orange
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        minimumSize: Size(screenWidth / 6, screenWidth / 24)),
+                    child:
+                    Text(option, style: TextStyles.subtitleText(context)),
+                  );
+                }).toList(),
+              )),
+        ),
+      ),
+    );
+    Overlay.of(context)?.insert(_overlayEntry!);
   }
 
   // sets audio playing
@@ -170,6 +201,13 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   void QuestionBoolChanged(bool isQuestionEvent) {
     setState(() {
       this.isQuestionEvent = isQuestionEvent;
+      if (isQuestionEvent == true) {
+        _hideOverlay();
+        _showOverlay(context);
+      } else {
+        _hideOverlay();
+      }
+
     });
   }
 
@@ -177,6 +215,13 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
   void IsCorrectBoolChanged(bool isCorrect) {
     setState(() {
       this.isCorrect = isCorrect;
+      // updates overlay to make answers green
+      shakeNum = 1;
+      shakeKey.currentState?.shake();
+      if (isCorrect == true) {
+        _hideOverlay();
+        _showOverlay(context);
+      }
     });
   }
 
@@ -186,4 +231,3 @@ class _GameState extends State<Game> with SingleTickerProviderStateMixin {
     Navigator.pop(context);
   }
 }
-

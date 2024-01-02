@@ -23,7 +23,7 @@ class StoryDataOne {
           animationInstruction: "", emotionInstruction: "", enlargeInstruction: "A", backgroundInstruction: -1),
       GeneralEvent(duration: Duration(seconds: 1), audioPath: "audio/narration/1/story_1_narration_4.mp3",
           animationInstruction: "", emotionInstruction: "", enlargeInstruction: "B", backgroundInstruction: -1),
-      GeneralEvent(duration: Duration(seconds: 3), audioPath: "audio/narration/1/story_1_narration_5.mp3",
+      GeneralEvent(duration: Duration(seconds: 2), audioPath: "audio/narration/1/story_1_narration_5.mp3",
           animationInstruction: "", emotionInstruction: "Ahappy", enlargeInstruction: "B", backgroundInstruction: -1),
       QuestionEvent(duration: Duration(seconds: 2), audioPath: "audio/narration/1/story_1_narration_6.mp3",
           question: Question(emotions: ["Happy" , "Sad", "Angry", "Scared"], answer: "Happy")),

@@ -5,10 +5,17 @@ import 'package:hone_mobile/widgets/rounded_white_container.dart';
 import 'package:purchases_flutter/models/customer_info_wrapper.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:hone_mobile/story_data/common_paths.dart';
+import 'package:hone_mobile/constant.dart';
 
 class StartMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double scaleFactor = screenHeight/ ipadHeight;
+    double bottomMargin = 50 * scaleFactor;
+    if (screenHeight < 500) {
+      bottomMargin /= 2.5;
+    }
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -19,21 +26,20 @@ class StartMenu extends StatelessWidget {
           ),
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(child: SizedBox(height: 0.0)),
-                RoundedWhiteContainer(
-                  child: const Text(
-                    'Emoquest',
-                    style: TextStyles.titleText,
-                    textAlign: TextAlign.center,
-                  ),
-                  padding: 20.0,
+                Container(
+                    height: screenHeight * 0.5,
+                    child: Image.asset(titleLogoImagePath, fit: BoxFit.cover)),
+                Text(
+                  'Emoquest',
+                  style: TextStyles.titleText(context),
+                  textAlign: TextAlign.center,
                 ),
                 RoundedWhiteContainerOnPressed(
-                  child: const Text(
+                  child: Text(
                     'Play',
-                    style: TextStyles.headingText,
+                    style: TextStyles.headingText(context),
                     textAlign: TextAlign.center,
                   ),
                   padding: 20.0,
@@ -44,16 +50,12 @@ class StartMenu extends StatelessWidget {
                 RoundedWhiteContainerOnPressed(
                   child: Text(
                     'Restore Purchases',
-                    style: TextStyles.subtitleText,
+                    style: TextStyles.subtitleText(context),
                   ),
                   onPressed: restorePurchases,
                   padding: 20.0,
                 ),
-                Expanded(
-                  child: SizedBox(
-                    height: 0.0
-                  )
-                )
+                SizedBox(height: bottomMargin),
               ],
             ),
           )

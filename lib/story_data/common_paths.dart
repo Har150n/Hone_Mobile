@@ -19,3 +19,4 @@ String correctAnswerAudioPath = "audio/sound_effects/correct_answer.wav";
 String whoopAudioPath = "audio/sound_effects/whoop.mp3";
 
 String gameBackgroundImagePath = "assets/images/background.png";
+String titleLogoImagePath = "assets/images/misc/title_logo.png";

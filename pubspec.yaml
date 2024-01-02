@@ -42,6 +42,7 @@ dependencies:
   purchases_flutter: ^6.5.0
   flutter_shakemywidget: ^1.0.5+1
   shared_preferences: ^2.2.2
+  url_launcher: ^6.1.14
 
 
 dev_dependencies:
@@ -94,6 +95,7 @@ flutter:
     - assets/images/backdrops/story_5/
     - assets/images/backdrops/story_6/
     - assets/images/backdrops/story_7/
+    - assets/images/misc/
     - assets/audio/music/
     - assets/audio/sound_effects/
     - assets/audio/narration/2/
